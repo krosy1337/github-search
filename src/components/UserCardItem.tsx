@@ -14,7 +14,7 @@ const UserCardItem: FC<UserCardItemProps> = ({avatar_url, login, onClick}) => {
             <ListItemButton sx={{display: "flex", columnGap: 1, padding: 1.1, borderRadius: 0}}
                             onClick={() => onClick(login)}>
                 <Avatar alt={login} sx={{width: 30, height: 30}}>
-                    <img src={avatar_url} alt={login}/>
+                    <img src={avatar_url} alt={login} width={30} height={30}/>
                 </Avatar>
                 <Typography variant="h6" textOverflow="ellipsis" whiteSpace="nowrap"
                             overflow="hidden">{login}</Typography>
