@@ -1,26 +1,37 @@
 import React, {FC, useEffect, useState} from "react"
-import {useSearchUsersQuery} from "../store/github/github.api"
-import {Box, Container, List, Paper, TextField} from "@mui/material"
+import {useLazyFetchUserReposQuery, useSearchUsersQuery} from "../store/github/github.api"
+import {Box, Container, List, ListItem, Paper, TextField} from "@mui/material"
 import CircularProgress from "@mui/material/CircularProgress"
 import {useDebounce} from "../hooks/useDebounce"
 import UserCardItem from "../components/UserCardItem"
-import {IUser} from "../models/github"
+import {IRepo, IUser} from "../models/github"
 import Typography from "@mui/material/Typography"
+
+import RepoCardItem from "../components/RepoCardItem"
 
 const HomePage: FC = () => {
     const [username, setUsername] = useState<string>("")
     const [isUsersVisible, setUsersVisible] = useState<boolean>(false)
     const debouncedUsername = useDebounce(username)
-    const {isLoading, isError, data} = useSearchUsersQuery(debouncedUsername, {
+
+    const {isLoading: isUsersLoading, isError: isUsersError, data: usersData} = useSearchUsersQuery(debouncedUsername, {
         skip: !debouncedUsername,
         refetchOnFocus: true,
     })
+    const [fetchRepos, {
+        isLoading: isReposLoading,
+        isError: isReposError,
+        data: reposData
+    }] = useLazyFetchUserReposQuery()
 
     useEffect(() => {
-        setUsersVisible(debouncedUsername && data)
-    }, [debouncedUsername, data])
+        setUsersVisible(!!debouncedUsername)
+    }, [debouncedUsername])
+
     const onClick = (login: string) => {
         setUsersVisible(false)
+        setUsername("")
+        fetchRepos(login)
     }
 
     return (
@@ -33,11 +44,8 @@ const HomePage: FC = () => {
                            value={username} onChange={(e) => setUsername(e.currentTarget.value)}
                            onFocus={() => {
                                if (username) {
-                                   setUsersVisible(!isError)
+                                   setUsersVisible(!isUsersError)
                                }
-                           }}
-                           onBlur={() => {
-                               setUsersVisible(false)
                            }}
                            sx={{height: 32, width: 300}}/>
                 {
@@ -47,22 +55,41 @@ const HomePage: FC = () => {
                                position: "absolute", top: 32,
                                height: 300, width: "100%",
                                m: 0, p: 0,
-                               overflowY: "scroll"
+                               overflowY: "scroll",
+                               zIndex: 1,
                            }}>
-                        {isLoading && <Box
+                        {isUsersLoading && <Box
                             sx={{display: "flex", justifyContent: "center", marginTop: 2,}}><CircularProgress/></Box>}
-                        {(data && data.length > 0)
+                        {(usersData && usersData.length > 0)
                             ?
-                            data?.map((user: IUser) =>
+                            usersData?.map((user: IUser) =>
                                 <UserCardItem key={user.id} login={user.login} avatar_url={user.avatar_url}
                                               onClick={onClick}/>)
                             :
-                            <Typography variant="h5" align="center">No one user :(</Typography>
+                            !isUsersLoading && <Typography variant="h5" align="center">No one user :(</Typography>
                         }
                     </Paper>
                 }
             </Box>
-            {isError && <Typography variant="h3" align="center">Something were wrong...</Typography>}
+            {isUsersError && <Typography variant="h3" align="center">Something were wrong...</Typography>}
+            <Box>
+                {isReposLoading &&
+                    <Box sx={{display: "flex", justifyContent: "center", marginTop: 2,}}><CircularProgress/></Box>}
+                {(reposData && reposData.length) &&
+                    <List sx={{p: 0, m: 0,}}>
+                        {reposData.map((repo: IRepo) =>
+                            <ListItem key={repo.id} sx={{
+                                display: "flex", flexDirection: "column", alignItems: "stretch", width: 300, paddingX: 0
+                            }}>
+                                <RepoCardItem name={repo.name} description={repo.description}
+                                              forks_count={repo.forks_count} watchers_count={repo.watchers_count}
+                                              url={repo.html_url}/>
+                            </ListItem>
+                        )}
+                    </List>
+                }
+                {isReposError && <Typography variant="h3" align="center">Something were wrong...</Typography>}
+            </Box>
         </Container>
     )
 }
