@@ -1,4 +1,6 @@
 export enum RoutesNames {
     ROOT = "/",
-    FAVOURITES = "FAVOURITES",
+    FAVOURITES = "/FAVOURITES",
+    LOGIN = "/LOGIN",
+    REGISTER = "/REGISTER",
 }
