@@ -1,27 +1,28 @@
-import React from "react"
-import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom"
-import HomePage from "./pages/HomePage"
-import FavouritesPage from "./pages/FavouritesPage"
+import React, {FC, useEffect, useState} from "react"
+import {RouteObject, useRoutes} from "react-router-dom"
 import Header from "./components/Header"
 import {CssBaseline} from "@mui/material"
-import { RoutesNames } from "./routes"
-import RegisterPage from "./pages/RegisterPage"
-import LoginPage from "./pages/LoginPage"
+import {guestRoutes, rootRoutes} from "./routes"
+import {onAuthStateChanged} from "firebase/auth"
+import {auth} from "./firebaseConfig"
 
-function App() {
+const App: FC = () => {
+    const [appRoutes, setAppRoutes] = useState<RouteObject[]>(rootRoutes.concat(guestRoutes))
+
+    const routes = useRoutes(appRoutes)
+
+    useEffect(() => {
+        onAuthStateChanged(auth, () => {
+            if (auth.currentUser) {
+                setAppRoutes(rootRoutes)
+            }
+        })
+    }, [])
     return (
         <>
-            <CssBaseline />
-            <BrowserRouter>
-                <Header />
-                <Routes>
-                    <Route path={RoutesNames.ROOT} element={<HomePage />} />
-                    <Route path={RoutesNames.FAVOURITES} element={<FavouritesPage />} />
-                    <Route path={RoutesNames.REGISTER} element={<RegisterPage />} />
-                    <Route path={RoutesNames.LOGIN} element={<LoginPage />} />
-                    <Route path="*" element={<Navigate to={RoutesNames.ROOT} />} />
-                </Routes>
-            </BrowserRouter>
+            <CssBaseline/>
+            <Header/>
+            {routes}
         </>
     )
 }
