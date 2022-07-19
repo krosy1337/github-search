@@ -9,8 +9,8 @@ import MenuItem from "@mui/material/MenuItem"
 import GitHubIcon from "@mui/icons-material/GitHub"
 import {Link} from "react-router-dom"
 import {RoutesNames} from "../routes"
-
-const pages = ["Home", "Favourites",]
+import {auth} from "../firebaseConfig"
+import {signOut} from "firebase/auth"
 
 const Header: FC = () => {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null)
@@ -21,6 +21,10 @@ const Header: FC = () => {
 
     const handleCloseNavMenu = () => {
         setAnchorElNav(null)
+    }
+
+    const logout = async () => {
+        signOut(auth)
     }
 
     return (
@@ -74,11 +78,11 @@ const Header: FC = () => {
                                 display: {xs: "block", md: "none"},
                             }}
                         >
-                                <MenuItem onClick={handleCloseNavMenu}>
-                                    <Link to={RoutesNames.FAVOURITES} style={{color: "inherit", textDecoration: "none"}}>
-                                        Favourites
-                                    </Link>
-                                </MenuItem>
+                            <MenuItem onClick={handleCloseNavMenu}>
+                                <Link to={RoutesNames.FAVOURITES} style={{color: "inherit", textDecoration: "none"}}>
+                                    Favourites
+                                </Link>
+                            </MenuItem>
                         </Menu>
                     </Box>
                     <GitHubIcon sx={{display: {xs: "flex", md: "none"}, mr: 1}}/>
@@ -109,6 +113,24 @@ const Header: FC = () => {
                                 Favourites
                             </Link>
                         </Button>
+                        {
+                            auth.currentUser
+                                ?
+                                <Button
+                                    onClick={logout}
+                                    sx={{my: 2, color: "white", display: "block"}}
+                                >
+                                    Logout
+                                </Button>
+                                :
+                                <Button
+                                    sx={{my: 2, color: "white", display: "block"}}
+                                >
+                                    <Link to={RoutesNames.LOGIN} style={{color: "inherit", textDecoration: "none"}}>
+                                        Login
+                                    </Link>
+                                </Button>
+                        }
                     </Box>
                 </Toolbar>
             </Container>
