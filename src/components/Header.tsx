@@ -81,11 +81,13 @@ const Header: FC = () => {
                                 display: {xs: "block", md: "none"},
                             }}
                         >
-                            <Link to={RoutesNames.FAVOURITES} style={{color: "inherit", textDecoration: "none"}}>
-                                <MenuItem onClick={handleCloseNavMenu}>
-                                    Favourites
-                                </MenuItem>
-                            </Link>
+                            {isAuth &&
+                                <Link to={RoutesNames.FAVOURITES} style={{color: "inherit", textDecoration: "none"}}>
+                                    <MenuItem onClick={handleCloseNavMenu}>
+                                            Favourites
+                                    </MenuItem>
+                                </Link>
+                            }
                             {
                                 isAuth
                                     ?
@@ -121,24 +123,26 @@ const Header: FC = () => {
                         Github Search
                     </Typography>
                     <Box sx={{flexGrow: 0, marginLeft: "auto", display: {xs: "none", md: "flex"}}}>
-                        <Link to={RoutesNames.FAVOURITES} style={{color: "inherit", textDecoration: "none"}}>
-                            <Button
-                                onClick={handleCloseNavMenu}
-                                sx={{my: 2, color: "white", display: "block"}}
-                            >
-                                Favourites
-                            </Button>
-                        </Link>
-
                         {
                             isAuth
                                 ?
-                                <Button
-                                    onClick={logout}
-                                    sx={{my: 2, color: "white", display: "block"}}
-                                >
-                                    Logout
-                                </Button>
+                                <>
+                                    <Link to={RoutesNames.FAVOURITES}
+                                          style={{color: "inherit", textDecoration: "none"}}>
+                                        <Button
+                                            onClick={handleCloseNavMenu}
+                                            sx={{my: 2, color: "white", display: "block"}}
+                                        >
+                                            Favourites
+                                        </Button>
+                                    </Link>
+                                    <Button
+                                        onClick={logout}
+                                        sx={{my: 2, color: "white", display: "block"}}
+                                    >
+                                        Logout
+                                    </Button>
+                                </>
                                 :
                                 <Link to={RoutesNames.LOGIN} style={{color: "inherit", textDecoration: "none"}}>
                                     <Button

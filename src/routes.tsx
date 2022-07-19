@@ -18,14 +18,18 @@ export const rootRoutes: RouteObject[] = [
         element: <HomePage/>,
     },
     {
-        path: RoutesNames.FAVOURITES,
-        element: <FavouritesPage/>,
-    },
-    {
         path: "*",
         element: <Navigate to={RoutesNames.ROOT}/>,
     }
 ]
+
+export const authRoutes: RouteObject[] = [
+    {
+        path: RoutesNames.FAVOURITES,
+        element: <FavouritesPage/>,
+    },
+]
+
 export const guestRoutes: RouteObject[] = [
     {
         path: RoutesNames.REGISTER,
