@@ -15,7 +15,9 @@ const App: FC = () => {
         onAuthStateChanged(auth, () => {
             if (auth.currentUser) {
                 setAppRoutes(rootRoutes)
+                return
             }
+            setAppRoutes(rootRoutes.concat(guestRoutes))
         })
     }, [])
     return (
