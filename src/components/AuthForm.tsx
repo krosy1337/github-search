@@ -4,7 +4,7 @@ import {SubmitHandler, useForm} from "react-hook-form"
 import {IAuthFormFields} from "../models/form"
 import {Link} from "react-router-dom"
 import GitHubIcon from "@mui/icons-material/GitHub"
-import { auth } from "../firebaseConfig"
+import {auth} from "../firebaseConfig"
 import {Auth, UserCredential} from "firebase/auth"
 
 interface AuthFormProps {
@@ -21,18 +21,17 @@ const AuthForm: FC<AuthFormProps> = ({title, subtitle, link, authFunc}) => {
     })
 
     const authWithEmailAndPassword = async (email: string, password: string) => {
-        const user = await authFunc(auth, email, password)
-        console.log(user)
-    }
-
-    const onSubmit: SubmitHandler<IAuthFormFields> = (data) => {
         try {
-            authWithEmailAndPassword(data.email, data.password)
-            setAuthError("")
-            reset()
+            await authFunc(auth, email, password)
         } catch (e: any) {
             setAuthError(e.message)
         }
+    }
+
+    const onSubmit: SubmitHandler<IAuthFormFields> = (data) => {
+        authWithEmailAndPassword(data.email, data.password)
+        setAuthError("")
+        reset()
     }
 
     return (
