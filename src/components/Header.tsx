@@ -11,8 +11,11 @@ import {Link} from "react-router-dom"
 import {RoutesNames} from "../routes"
 import {auth} from "../firebaseConfig"
 import {signOut} from "firebase/auth"
+import {useAppSelector} from "../hooks/redux"
 
 const Header: FC = () => {
+    const {isAuth} = useAppSelector(state => state.app)
+
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null)
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -78,11 +81,24 @@ const Header: FC = () => {
                                 display: {xs: "block", md: "none"},
                             }}
                         >
-                            <MenuItem onClick={handleCloseNavMenu}>
-                                <Link to={RoutesNames.FAVOURITES} style={{color: "inherit", textDecoration: "none"}}>
+                            <Link to={RoutesNames.FAVOURITES} style={{color: "inherit", textDecoration: "none"}}>
+                                <MenuItem onClick={handleCloseNavMenu}>
                                     Favourites
-                                </Link>
-                            </MenuItem>
+                                </MenuItem>
+                            </Link>
+                            {
+                                isAuth
+                                    ?
+                                    <MenuItem onClick={logout}>
+                                        Logout
+                                    </MenuItem>
+                                    :
+                                    <Link to={RoutesNames.LOGIN} style={{color: "inherit", textDecoration: "none"}}>
+                                        <MenuItem onClick={handleCloseNavMenu}>
+                                            Login
+                                        </MenuItem>
+                                    </Link>
+                            }
                         </Menu>
                     </Box>
                     <GitHubIcon sx={{display: {xs: "flex", md: "none"}, mr: 1}}/>
@@ -105,16 +121,17 @@ const Header: FC = () => {
                         Github Search
                     </Typography>
                     <Box sx={{flexGrow: 0, marginLeft: "auto", display: {xs: "none", md: "flex"}}}>
-                        <Button
-                            onClick={handleCloseNavMenu}
-                            sx={{my: 2, color: "white", display: "block"}}
-                        >
-                            <Link to={RoutesNames.FAVOURITES} style={{color: "inherit", textDecoration: "none"}}>
+                        <Link to={RoutesNames.FAVOURITES} style={{color: "inherit", textDecoration: "none"}}>
+                            <Button
+                                onClick={handleCloseNavMenu}
+                                sx={{my: 2, color: "white", display: "block"}}
+                            >
                                 Favourites
-                            </Link>
-                        </Button>
+                            </Button>
+                        </Link>
+
                         {
-                            auth.currentUser
+                            isAuth
                                 ?
                                 <Button
                                     onClick={logout}
@@ -123,13 +140,13 @@ const Header: FC = () => {
                                     Logout
                                 </Button>
                                 :
-                                <Button
-                                    sx={{my: 2, color: "white", display: "block"}}
-                                >
-                                    <Link to={RoutesNames.LOGIN} style={{color: "inherit", textDecoration: "none"}}>
+                                <Link to={RoutesNames.LOGIN} style={{color: "inherit", textDecoration: "none"}}>
+                                    <Button
+                                        sx={{my: 2, color: "white", display: "block"}}
+                                    >
                                         Login
-                                    </Link>
-                                </Button>
+                                    </Button>
+                                </Link>
                         }
                     </Box>
                 </Toolbar>

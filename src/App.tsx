@@ -1,23 +1,24 @@
-import React, {FC, useEffect, useState} from "react"
-import {RouteObject, useRoutes} from "react-router-dom"
+import React, {FC, useEffect, useMemo} from "react"
+import {useRoutes} from "react-router-dom"
 import Header from "./components/Header"
 import {CssBaseline} from "@mui/material"
 import {guestRoutes, rootRoutes} from "./routes"
 import {onAuthStateChanged} from "firebase/auth"
 import {auth} from "./firebaseConfig"
+import {useActions, useAppSelector} from "./hooks/redux"
 
 const App: FC = () => {
-    const [appRoutes, setAppRoutes] = useState<RouteObject[]>(rootRoutes.concat(guestRoutes))
+    const {isAuth} = useAppSelector(state => state.app)
+    const {setAuth} = useActions()
+    const appRoutes = useMemo(() => {
+        return isAuth ? rootRoutes : rootRoutes.concat(guestRoutes)
+    }, [isAuth])
 
     const routes = useRoutes(appRoutes)
 
     useEffect(() => {
         onAuthStateChanged(auth, () => {
-            if (auth.currentUser) {
-                setAppRoutes(rootRoutes)
-                return
-            }
-            setAppRoutes(rootRoutes.concat(guestRoutes))
+            setAuth(!!auth.currentUser)
         })
     }, [])
     return (
