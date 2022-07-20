@@ -6,13 +6,17 @@ import {useDebounce} from "../hooks/useDebounce"
 import UserCardItem from "../components/UserCardItem"
 import {IRepo, IUser} from "../models/github"
 import Typography from "@mui/material/Typography"
-
 import RepoCardItem from "../components/RepoCardItem"
+import {auth} from "../firebaseConfig"
+import {useActions, useAppSelector} from "../hooks/redux"
 
 const HomePage: FC = () => {
     const [username, setUsername] = useState<string>("")
     const [isUsersVisible, setUsersVisible] = useState<boolean>(false)
     const debouncedUsername = useDebounce(username)
+    const {fetchFav} = useActions()
+    const {favourites, error: favError, isLoading: isFavLoading} = useAppSelector(state => state.firebase)
+    const {isAuth} = useAppSelector(state => state.app)
 
     const {isLoading: isUsersLoading, isError: isUsersError, data: usersData} = useSearchUsersQuery(debouncedUsername, {
         skip: !debouncedUsername,
@@ -32,6 +36,13 @@ const HomePage: FC = () => {
         setUsersVisible(false)
         setUsername("")
         fetchRepos(login)
+        fetchFavourites()
+    }
+
+    const fetchFavourites = async () => {
+        if (auth.currentUser && isAuth) {
+            fetchFav(auth.currentUser.uid)
+        }
     }
 
     return (
@@ -73,9 +84,9 @@ const HomePage: FC = () => {
             </Box>
             {isUsersError && <Typography variant="h3" align="center">Something were wrong...</Typography>}
             <Box>
-                {isReposLoading &&
+                {(isReposLoading || isFavLoading) &&
                     <Box sx={{display: "flex", justifyContent: "center", marginTop: 2,}}><CircularProgress/></Box>}
-                {(reposData && reposData.length) &&
+                {(reposData && reposData.length && !isFavLoading && !isReposLoading) &&
                     <List sx={{p: 0, m: 0,}}>
                         {reposData.map((repo: IRepo) =>
                             <ListItem key={repo.id} sx={{
@@ -83,12 +94,13 @@ const HomePage: FC = () => {
                             }}>
                                 <RepoCardItem name={repo.name} description={repo.description}
                                               forks_count={repo.forks_count} watchers_count={repo.watchers_count}
-                                              url={repo.html_url}/>
+                                              url={repo.html_url} repo={repo}
+                                              isFavourite={favourites.map(f => f.id).includes(repo.id)}/>
                             </ListItem>
                         )}
                     </List>
                 }
-                {isReposError && <Typography variant="h3" align="center">Something were wrong...</Typography>}
+                {(isReposError || favError) && <Typography variant="h3" align="center">Something were wrong...</Typography>}
             </Box>
         </Container>
     )
