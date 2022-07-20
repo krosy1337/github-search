@@ -25,11 +25,12 @@ const FavouritesPage: FC = () => {
                 sx={{display: "flex", justifyContent: "center", marginTop: 2,}}><CircularProgress/></Box>}
             {favourites.length > 0 &&
                 <List sx={{p: 0, m: 0,
-                    display: "flex", flexWrap: "wrap", flexDirection: {xs: "column", md: "row"}, alignItems: "stretch", columnGap: 1, }}>
+                    display: "flex", flexWrap: "wrap", flexDirection: "row", alignItems: "stretch", columnGap: 1, }}>
                 {favourites.map((repo: IRepo) =>
                     <ListItem key={repo.id} sx={{
-                        paddingX: 0, display: "flex", width: {xs: "100%", md: "auto"},
+                        paddingX: 0, display: "flex",
                         alignItems: "stretch", flexDirection: "column",
+                        width: {xs: "100%", sm: "45%", md: "30%"}, flexGrow: 1, justifyContent: "stretch"
                     }}>
                         <RepoCardItem name={repo.name} description={repo.description}
                                       forks_count={repo.forks_count} watchers_count={repo.watchers_count}

@@ -46,11 +46,11 @@ const HomePage: FC = () => {
     }
 
     return (
-        <Container maxWidth="lg" sx={{
+        <Container maxWidth="md" sx={{
             paddingY: 5,
             display: "flex", flexDirection: "column", alignItems: "center",
         }}>
-            <Box sx={{position: "relative"}}>
+            <Box sx={{position: "relative", width: "100%",}}>
                 <TextField variant="standard" placeholder="Search users on Github"
                            value={username} onChange={(e) => setUsername(e.currentTarget.value)}
                            onFocus={() => {
@@ -58,7 +58,7 @@ const HomePage: FC = () => {
                                    setUsersVisible(!isUsersError)
                                }
                            }}
-                           sx={{height: 32, width: 300}}/>
+                           sx={{height: 32, width: "100%"}}/>
                 {
                     isUsersVisible &&
                     <Paper component={List} elevation={10}
@@ -83,14 +83,15 @@ const HomePage: FC = () => {
                 }
             </Box>
             {isUsersError && <Typography variant="h3" align="center">Something were wrong...</Typography>}
-            <Box>
+            <Box sx={{maxWidth: "100%"}}>
                 {(isReposLoading || isFavLoading) &&
                     <Box sx={{display: "flex", justifyContent: "center", marginTop: 2,}}><CircularProgress/></Box>}
                 {(reposData && reposData.length && !isFavLoading && !isReposLoading) &&
-                    <List sx={{p: 0, m: 0,}}>
+                    <List sx={{p: 0, m: 0, display: "flex", flexWrap: "wrap", columnGap: 1,}}>
                         {reposData.map((repo: IRepo) =>
                             <ListItem key={repo.id} sx={{
-                                display: "flex", flexDirection: "column", alignItems: "stretch", width: 300, paddingX: 0
+                                display: "flex", flexDirection: "column", alignItems: "stretch",
+                                width: {xs: "100%", sm: "45%", md: "30%"}, flexGrow: 1, flexShrink: 0, paddingX: 0
                             }}>
                                 <RepoCardItem name={repo.name} description={repo.description}
                                               forks_count={repo.forks_count} watchers_count={repo.watchers_count}
