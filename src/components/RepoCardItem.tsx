@@ -43,7 +43,8 @@ const RepoCardItem: FC<RepoCardItemProps> = ({watchers_count, forks_count,
 
     return (
         <Card variant="outlined" component={Link} href={url} target="_blank"
-              sx={{textDecoration: "none", color: "inherit", padding: 1,}}>
+              sx={{textDecoration: "none", color: "inherit", padding: 1, height: "100%",
+                  display: "flex", flexDirection: "column"}}>
             <Typography variant="h5" textOverflow="ellipsis" whiteSpace="nowrap"
                         overflow="hidden">{name}</Typography>
             <Typography variant="body2" textOverflow="ellipsis" whiteSpace="nowrap"
@@ -56,7 +57,7 @@ const RepoCardItem: FC<RepoCardItemProps> = ({watchers_count, forks_count,
                     <Typography>{watchers_count}</Typography><RemoveRedEyeRoundedIcon />
                 </Box>
             </Box>
-            <Box sx={{display: "flex", alignItems: "center", columnGap: 0.5}}>
+            <Box sx={{display: "flex", alignItems: "center", columnGap: 0.5, mt: "auto"}}>
                 <Rating value={Number(isFavourite)} max={1} onChange={onClick} />
             </Box>
         </Card>
